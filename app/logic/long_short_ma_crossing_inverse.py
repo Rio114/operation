@@ -19,8 +19,8 @@ class LongShortMACrossing:
         bear = df["short"] < df["long"]
         bear_prev = bear.shift(1)
 
-        df["buy_judgment"] = bull & bear_prev
-        df["sell_judgment"] = bull_prev & bear
+        df["sell_judgment"] = bull & bear_prev
+        df["buy_judgment"] = bull_prev & bear
 
         return df.copy()
 
