@@ -3,7 +3,12 @@ from app.indicators.ichimoku import Ichimoku
 
 
 class IchimokuMethod:
-    def __init__(self, short_term: int, long_term: int, longlong_term: int, ):
+    def __init__(
+        self,
+        short_term: int,
+        long_term: int,
+        longlong_term: int,
+    ):
         self.short_term = short_term
         self.long_term = long_term
         self.longlong_term = longlong_term
@@ -16,26 +21,19 @@ class IchimokuMethod:
 
         # signal_1
         bull_1 = df["conversion"] > df["basis"]
-        bull_prev_1 = bull_1.shift(1)
         bear_1 = df["conversion"] < df["basis"]
-        bear_prev_1 = bear_1.shift(1)
-
         df["b_judge_1"] = bull_1
         df["s_judge_1"] = bear_1
 
         # signal_2
         bull_2 = (df["high"] < df["behind"]).shift(self.longlong_term)
         bear_2 = df["low"] > df["behind"].shift(self.longlong_term)
-
-        df["b_judge_2"] = bull_1
-        df["s_judge_2"] = bear_1
+        df["b_judge_2"] = bull_2
+        df["s_judge_2"] = bear_2
 
         # signal_3
         bull_3 = df["high"] > df[["preceding_span1", "preceding_span2"]].max(axis=1)
         bear_3 = df["low"] < df[["preceding_span1", "preceding_span2"]].min(axis=1)
-        bull_prev_3 = bull_3.shift(1)
-        bear_prev_3 = bear_3.shift(1)
-
         df["b_judge_3"] = bull_3
         df["s_judge_3"] = bear_3
 
