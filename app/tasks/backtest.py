@@ -11,7 +11,11 @@ class BackTest:
             self.pip_basis = 0.0001
 
     def run_backtest(
-        self, df: pd.DataFrame, stop_pips: int, limit_pips: int, split_pips: float
+        self,
+        df: pd.DataFrame,
+        stop_pips: int,
+        limit_pips: int,
+        split_pips: float,
     ):
         """
         TODO: logger
@@ -23,14 +27,22 @@ class BackTest:
         position = 0
         profit = 0
         cnt = 0
+        open_idx = -1
+        close_idx = -1
+        records = []
 
         for row in df.itertuples():
+            idx = row.time
 
             if row.buy_judgment & (position == 0):
                 position = row.close
+                open_idx = idx
+                position_type = "buy"
                 continue
             elif row.sell_judgment & (position == 0):
                 position = -row.close
+                open_idx = idx
+                position_type = "sell"
                 continue
 
             if position != 0:
@@ -44,28 +56,98 @@ class BackTest:
                     close_price = -row.close
 
                 if low_price < position - stop:
+                    close_position = position - stop
                     diff_profit = -stop - split
                     profit += diff_profit
-                    cnt += 1
+                    close_idx = idx
+                    records.append(
+                        [
+                            open_idx,
+                            close_idx,
+                            position_type,
+                            position,
+                            close_position,
+                            diff_profit,
+                            profit,
+                        ]
+                    )
                     position = 0
+                    cnt += 1
                     continue
                 elif high_price > position + limit:
+                    close_position = position + limit
                     diff_profit = limit - split
                     profit += diff_profit
+                    records.append(
+                        [
+                            open_idx,
+                            close_idx,
+                            position_type,
+                            position,
+                            close_position,
+                            diff_profit,
+                            profit,
+                        ]
+                    )
                     position = 0
                     cnt += 1
-                    continue
-                elif (position > 0) & (row.sell_judgment):
-                    diff_profit = close_price - position - split
-                    profit += diff_profit
-                    cnt += 1
-                    position = -close_price
-                    continue
-                elif (position < 0) & (row.buy_judgment):
-                    diff_profit = close_price - position - split
-                    profit += diff_profit
-                    cnt += 1
-                    position = -close_price
+                    close_idx = idx
                     continue
 
-        return profit, cnt
+            # if position != 0 & reverse:
+            #     if (position > 0) & (row.sell_judgment):
+            #         close_position = close_price
+            #         diff_profit = close_price - position - split
+            #         profit += diff_profit
+            #         close_idx = idx
+            #         records.append(
+            #             [
+            #                 open_idx,
+            #                 close_idx,
+            #                 position_type,
+            #                 position,
+            #                 close_position,
+            #                 diff_profit,
+            #                 profit,
+            #             ]
+            #         )
+            #         position_type = "sell"
+            #         cnt += 1
+            #         position = -close_price
+            #         open_idx = idx
+            #         continue
+            #     elif (position < 0) & (row.buy_judgment):
+            #         close_position = close_price
+            #         diff_profit = close_price - position - split
+            #         profit += diff_profit
+            #         close_idx = idx
+            #         records.append(
+            #             [
+            #                 open_idx,
+            #                 close_idx,
+            #                 position_type,
+            #                 position,
+            #                 close_position,
+            #                 diff_profit,
+            #                 profit,
+            #             ]
+            #         )
+            #         position_type = "buy"
+            #         cnt += 1
+            #         position = -close_price
+            #         open_idx = idx
+            #         continue
+
+        record_df = pd.DataFrame(
+            records,
+            columns=[
+                "open_idx",
+                "close_idx",
+                "position_type",
+                "open_price",
+                "close_price",
+                "transaction_profit",
+                "cum_profit",
+            ],
+        )
+        return profit, cnt, record_df
