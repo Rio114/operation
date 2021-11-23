@@ -93,11 +93,23 @@ class Transaction:
             }
         }
 
-        return data
+        res = orders_api.OrderCreate(accountID=self.account_id, data=data)
+        _ = self.api.request(res)
+        return res.response
 
-        # res = orders_api.OrderCreate(accountID=self.account_id, data=data)
-        # _ = self.api.request(res)
-        # return res.response
+    def close_current_position(self, instrument: str, position_type: str):
+        if position_type == "long":
+            data = {"longUnits": "ALL"}
+        elif position_type == "short":
+            data = {"shortUnits": "ALL"}
+        else:
+            return []
+
+        res = positions_api.PositionClose(
+            accountID=self.account_id, instrument=instrument, data=data
+        )
+        _ = self.api.request(res)
+        return res.response
 
 
 def main():
@@ -123,11 +135,16 @@ def main():
         take_profit_pips=take_profit_pips,
         units=units,
     )
-    print(open_order)
-
     print("------send orders------")
-    res = transaction.create_open_order_at_market(open_order)
-    print(res)
+    print(open_order)
+    # res = transaction.create_open_order_at_market(open_order)
+    # print(res)
+
+    print("------close position orders------")
+    # res = transaction.close_current_position("USD_JPY", "long")
+    # print(res)
+
+    print("-------end of process-------")
 
 
 if __name__ == "__main__":
