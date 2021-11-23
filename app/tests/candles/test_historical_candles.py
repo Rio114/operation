@@ -1,8 +1,7 @@
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
-
 from app.infra.candle.historical_candle import HistricalCandleFormatter
+from pandas.testing import assert_frame_equal
 
 
 class TestHistoricalResponseFormatter:
@@ -41,8 +40,6 @@ class TestHistoricalResponseFormatter:
         actual = client.assign_candles(response_body)
 
         expected_cols = [
-            "instrument",
-            "granularity",
             "time",
             "type",
             "open",
@@ -55,8 +52,6 @@ class TestHistoricalResponseFormatter:
 
         expected_values = [
             [
-                "USD_JPY",
-                "D",
                 "2021-09-07T21:00:00.000000000Z",
                 "bid",
                 110.229,
@@ -67,8 +62,6 @@ class TestHistoricalResponseFormatter:
                 True,
             ],
             [
-                "USD_JPY",
-                "D",
                 "2021-09-08T21:00:00.000000000Z",
                 "bid",
                 110.205,
