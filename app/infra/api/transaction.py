@@ -59,25 +59,23 @@ class Transaction:
 
         return current_orders
 
-    def create_open_order_at_market(self, open_order: OpenOrderModel) -> str:
+    def create_open_order_at_market(self, oom: OpenOrderModel) -> str:
         pip_digit = 2
         pip_basis = 10 ** (-pip_digit)
-        instrument = open_order.instrument
+        instrument = oom.instrument
 
-        if open_order.order_type == "long":
+        if oom.order_type == "long":
             order_type_flg = 1
-        elif open_order.order_type == "short":
+        elif oom.order_type == "short":
             order_type_flg = -1
 
-        units = order_type_flg * open_order.units
+        units = order_type_flg * oom.units
         stop_loss_price = order_type_flg * round(
-            order_type_flg * open_order.current_price
-            - open_order.stop_loss_pips * pip_basis,
+            order_type_flg * oom.current_price - oom.stop_loss_pips * pip_basis,
             pip_digit + 2,
         )
         take_profit_price = order_type_flg * round(
-            order_type_flg * open_order.current_price
-            + open_order.take_profit_pips * pip_basis,
+            order_type_flg * oom.current_price + oom.take_profit_pips * pip_basis,
             pip_digit + 2,
         )
 
