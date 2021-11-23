@@ -4,7 +4,10 @@ from typing import List
 
 @dataclasses.dataclass
 class QuoteCurrentCandleModel:
-    pass
+    granularity: str
+    instrument: str
+    price_type: str  # ["M", "A", "B"]
+    stick_count: int
 
 
 @dataclasses.dataclass

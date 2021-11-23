@@ -13,8 +13,6 @@ class HistricalCandleFormatter:
             "volume": int,
         }
         self.output_cols = [
-            "instrument",
-            "granularity",
             "time",
             "type",
             "open",
@@ -40,9 +38,6 @@ class HistricalCandleFormatter:
         assert len(candle_types) == 1, "candle types in response must be unique"
 
         candle_type = candle_types.values[0]
-
-        df["instrument"] = response_body["instrument"]
-        df["granularity"] = response_body["granularity"]
 
         df["type"] = candle_type
 

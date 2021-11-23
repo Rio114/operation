@@ -64,9 +64,9 @@ class Transaction:
         pip_basis = 10 ** (-pip_digit)
         instrument = oom.instrument
 
-        if oom.order_type == "long":
+        if oom.order_type == "buy":
             order_type_flg = 1
-        elif oom.order_type == "short":
+        elif oom.order_type == "sell":
             order_type_flg = -1
 
         units = order_type_flg * oom.units
@@ -96,9 +96,9 @@ class Transaction:
         return res.response
 
     def close_current_position(self, instrument: str, position_type: str):
-        if position_type == "long":
+        if position_type == "buy":
             data = {"longUnits": "ALL"}
-        elif position_type == "short":
+        elif position_type == "sell":
             data = {"shortUnits": "ALL"}
         else:
             return []
@@ -127,7 +127,7 @@ def main():
 
     open_order = OpenOrderModel(
         instrument="USD_JPY",
-        order_type="long",
+        order_type="buy",
         current_price=current_price,
         stop_loss_pips=stop_loss_pips,
         take_profit_pips=take_profit_pips,
