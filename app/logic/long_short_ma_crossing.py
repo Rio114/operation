@@ -8,7 +8,7 @@ class LongShortMACrossing:
         self.short_term = short_term
 
     def generate_judgment_matrix(self, candle_df):
-        df = candle_df  # .iloc[-self.long_term - 1 :].copy()
+        df = candle_df
 
         df["short"] = MovingAverage().sma(df["close"], self.short_term)
         df["long"] = MovingAverage().sma(df["close"], self.long_term)

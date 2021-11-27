@@ -112,15 +112,15 @@ class Candle:
 def main():
     client = Candle()
 
-    qhcm = QuoteHistoricalCandleModel(
-        granularity="S5",
-        instrument="USD_JPY",
-        price_type="M",
-        quote_from="20211122",
-        quote_to="20211123",
-    )
-    df = client.quote_historical_candles(qhcm)
-    print(df)
+    # qhcm = QuoteHistoricalCandleModel(
+    #     granularity="S5",
+    #     instrument="USD_JPY",
+    #     price_type="M",
+    #     quote_from="20211122",
+    #     quote_to="20211123",
+    # )
+    # df = client.quote_historical_candles(qhcm)
+    # print(df)
 
     qccm = QuoteCurrentCandleModel(
         granularity="M15", instrument="USD_JPY", price_type="M", stick_count=30

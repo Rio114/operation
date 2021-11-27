@@ -16,7 +16,7 @@ def main():
 
     cond_list = []
     for stop in range(20, 51, 5):
-        for limit in range(20, 101, 5):
+        for take in range(20, 101, 5):
             for short in range(7, 13, 1):
                 for long in range(short * 2, short * 3, 2):
                     for longlong in range(short * 4, short * 5, 2):
@@ -25,7 +25,7 @@ def main():
                                 df_original,
                                 instrument,
                                 stop,
-                                limit,
+                                take,
                                 short,
                                 long,
                                 longlong,
@@ -43,12 +43,14 @@ def main():
             columns=[
                 "instrument",
                 "stop",
-                "limit",
+                "take",
                 "short",
                 "long",
                 "longlong",
                 "profit",
                 "count",
+                "win_count",
+                "loose_count",
             ],
         )
         .sort_values("profit", ascending=False)
@@ -65,34 +67,45 @@ def main():
 
     best_input = [df_original, instrument]
     best_input.extend(best_cond)
-    _, _, best_df = gen_backtest_df(best_input)
+    _, _, _, _, best_df = gen_backtest_df(best_input)
 
     stop = best_cond[0]
-    limit = best_cond[1]
+    take = best_cond[1]
     short = best_cond[2]
     long = best_cond[3]
     longlong = best_cond[4]
 
     best_df.to_csv(
-        f"backtest_ichimoku_{instrument}_{stop}_{limit}_{short}_{long}_{longlong}.csv",
+        f"backtest_ichimoku_{instrument}_{stop}_{take}_{short}_{long}_{longlong}.csv",
         index=False,
     )
     print(best_df)
 
 
 def backtest_process(inputs):
-    _, instrument, stop, limit, short, long, longlong = inputs
-    p, c, df = gen_backtest_df(inputs)
-    return [instrument, stop, limit, short, long, longlong, p, c]
+    _, instrument, stop, take, short, long, longlong = inputs
+    p, c, wc, lc, df = gen_backtest_df(inputs)
+    return [instrument, stop, take, short, long, longlong, p, c, wc, lc]
 
 
 def gen_backtest_df(inputs):
-    df_original, instrument, stop, limit, short, long, longlong = inputs
-    client = BackTest(instrument)
-    logic = IchimokuMethod(short, long, longlong)
+    df_original, instrument, stop, take, short, long, longlong = inputs
+    if instrument in ["EUR_JPY", "USD_JPY"]:
+        pip_basis = 0.01
+    else:
+        pip_basis = 0.0001
+    client = BackTest(instrument, 0.8)
+    logic = IchimokuMethod(
+        short,
+        long,
+        longlong,
+        stop,
+        take,
+        pip_basis,
+    )
     df = logic.generate_judgment_matrix(df_original)
-    p, c, df = client.run_backtest(df, stop, limit, 0.8)
-    return p, c, df
+    p, c, wc, lc, df = client.run_backtest(df)
+    return p, c, wc, lc, df
 
 
 if __name__ == "__main__":

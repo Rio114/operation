@@ -1,8 +1,9 @@
 import pandas as pd
+from app.logic.common import add_fixed_width_limit_prices
 
 
 class BackTest:
-    def __init__(self, instrument: str):
+    def __init__(self, instrument: str, split_pips: float):
         is_JPY = instrument[-3:] == "JPY"
 
         if is_JPY:
@@ -10,23 +11,25 @@ class BackTest:
         else:
             self.pip_basis = 0.0001
 
+        self.stop_loss_pips = 20
+        self.take_profit_pips = 20
+        self.split = split_pips * self.pip_basis
+
     def run_backtest(
         self,
         df: pd.DataFrame,
-        stop_pips: int,
-        limit_pips: int,
-        split_pips: float,
     ):
-        """
-        TODO: logger
-        """
-        stop = stop_pips * self.pip_basis
-        limit = limit_pips * self.pip_basis
-        split = split_pips * self.pip_basis
+
+        if "buy_stop_loss" not in list(df.columns):
+            df = add_fixed_width_limit_prices(
+                df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
+            )
 
         position = 0
         profit = 0
         cnt = 0
+        win_cnt = 0
+        loose_cnt = 0
         open_idx = -1
         close_idx = -1
         records = []
@@ -38,26 +41,28 @@ class BackTest:
                 position = row.close
                 open_idx = idx
                 position_type = "buy"
+                stop_loss_price = row.buy_stop_loss
+                take_profit_price = row.buy_take_profit
                 continue
             elif row.sell_judgment & (position == 0):
                 position = -row.close
                 open_idx = idx
                 position_type = "sell"
+                stop_loss_price = -row.sell_stop_loss
+                take_profit_price = -row.sell_take_profit
                 continue
 
             if position != 0:
                 if position > 0:
                     high_price = row.high
                     low_price = row.low
-                    close_price = row.close
                 elif position < 0:
                     high_price = -row.low
                     low_price = -row.high
-                    close_price = -row.close
 
-                if low_price < position - stop:
-                    close_position = position - stop
-                    diff_profit = -stop - split
+                if low_price < stop_loss_price:
+                    close_position = stop_loss_price
+                    diff_profit = close_position - position - self.split
                     profit += diff_profit
                     close_idx = idx
                     records.append(
@@ -73,11 +78,13 @@ class BackTest:
                     )
                     position = 0
                     cnt += 1
+                    loose_cnt += 1
                     continue
-                elif high_price > position + limit:
-                    close_position = position + limit
-                    diff_profit = limit - split
+                elif high_price > take_profit_price:
+                    close_position = take_profit_price
+                    diff_profit = close_position - position - self.split
                     profit += diff_profit
+                    close_idx = idx
                     records.append(
                         [
                             open_idx,
@@ -91,7 +98,7 @@ class BackTest:
                     )
                     position = 0
                     cnt += 1
-                    close_idx = idx
+                    win_cnt += 1
                     continue
 
             # if position != 0 & reverse:
@@ -150,4 +157,4 @@ class BackTest:
                 "cum_profit",
             ],
         )
-        return profit, cnt, record_df
+        return profit, cnt, win_cnt, loose_cnt, record_df
