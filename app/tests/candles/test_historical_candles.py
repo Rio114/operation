@@ -1,7 +1,8 @@
 import pandas as pd
 import pytest
-from app.infra.candle.historical_candle import HistricalCandleFormatter
 from pandas.testing import assert_frame_equal
+
+from app.infra.candle.historical_candle import HistricalCandleFormatter
 
 
 class TestHistoricalResponseFormatter:

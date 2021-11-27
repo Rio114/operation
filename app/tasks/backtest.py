@@ -1,4 +1,5 @@
 import pandas as pd
+
 from app.logic.common import add_fixed_width_limit_prices
 
 

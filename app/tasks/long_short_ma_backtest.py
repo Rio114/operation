@@ -1,4 +1,5 @@
 import pandas as pd
+
 from app.logic.long_short_ma_crossing import LongShortMACrossing
 from app.tasks.backtest import BackTest
 

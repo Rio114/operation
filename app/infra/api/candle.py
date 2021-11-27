@@ -2,13 +2,14 @@ import datetime as dt
 import time
 
 import pandas as pd
-from app.config import Config
-from app.entities.candle import QuoteCurrentCandleModel, QuoteHistoricalCandleModel
-from app.infra.candle.historical_candle import HistricalCandleFormatter
 from oandapyV20.endpoints.instruments import (
     InstrumentsCandles as InstrumentsCandles_api,
 )
 from oandapyV20.exceptions import V20Error
+
+from app.config import Config
+from app.entities.candle import QuoteCurrentCandleModel, QuoteHistoricalCandleModel
+from app.infra.candle.historical_candle import HistricalCandleFormatter
 
 
 class Candle:
