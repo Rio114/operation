@@ -21,7 +21,7 @@ class BackTest:
         df: pd.DataFrame,
     ):
 
-        if "buy_stop_loss" not in list(df.columns):
+        if "buy_stop_loss_price" not in list(df.columns):
             df = add_fixed_width_limit_prices(
                 df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
             )
@@ -42,15 +42,15 @@ class BackTest:
                 position = row.close
                 open_idx = idx
                 position_type = "buy"
-                stop_loss_price = row.buy_stop_loss
-                take_profit_price = row.buy_take_profit
+                stop_loss_price = row.buy_stop_loss_price
+                take_profit_price = row.buy_take_profit_price
                 continue
             elif row.sell_judgment & (position == 0):
                 position = -row.close
                 open_idx = idx
                 position_type = "sell"
-                stop_loss_price = -row.sell_stop_loss
-                take_profit_price = -row.sell_take_profit
+                stop_loss_price = -row.sell_stop_loss_price
+                take_profit_price = -row.sell_take_profit_price
                 continue
 
             if position != 0:

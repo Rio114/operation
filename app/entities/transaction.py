@@ -19,8 +19,8 @@ class OpenOrderModel:
     instrument: str
     order_type: str
     current_price: float
-    stop_loss_pips: int
-    take_profit_pips: int
+    stop_loss_price: float
+    take_profit_price: float
     units: int
 
 

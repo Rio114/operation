@@ -61,9 +61,12 @@ class Transaction:
         return current_orders
 
     def create_open_order_at_market(self, oom: OpenOrderModel) -> str:
-        pip_digit = 2
-        pip_basis = 10 ** (-pip_digit)
         instrument = oom.instrument
+
+        if instrument == "EUR_USD":
+            pip_digit = 4
+        else:
+            pip_digit = 2
 
         if oom.order_type == "buy":
             order_type_flg = 1
@@ -72,12 +75,12 @@ class Transaction:
 
         units = order_type_flg * oom.units
         stop_loss_price = order_type_flg * round(
-            order_type_flg * oom.current_price - oom.stop_loss_pips * pip_basis,
-            pip_digit + 2,
+            oom.stop_loss_price,
+            pip_digit + 1,
         )
         take_profit_price = order_type_flg * round(
-            order_type_flg * oom.current_price + oom.take_profit_pips * pip_basis,
-            pip_digit + 2,
+            oom.take_profit_price,
+            pip_digit + 1,
         )
 
         data = {
@@ -121,17 +124,17 @@ def main():
     print("------current orders------")
     print(orders)
 
-    stop_loss_pips = 10
-    take_profit_pips = 10
     current_price = 115.111
+    stop_loss_prices = 115.011
+    take_profit_prices = 115.211
     units = 10
 
     open_order = OpenOrderModel(
         instrument="USD_JPY",
         order_type="buy",
         current_price=current_price,
-        stop_loss_pips=stop_loss_pips,
-        take_profit_pips=take_profit_pips,
+        stop_loss_pips=stop_loss_prices,
+        take_profit_pips=take_profit_prices,
         units=units,
     )
     print("------send orders------")

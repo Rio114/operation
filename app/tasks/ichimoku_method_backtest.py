@@ -7,11 +7,11 @@ from app.tasks.backtest import BackTest
 
 
 def main():
-    filename = "historical_data/USD_JPY_M15_M_20211106212354.csv"
+    # filename = "historical_data/USD_JPY_M15_M_20211106212354.csv"
     # filename = "historical_data/EUR_JPY_M15_M_20211106212412.csv"
-    # filename = "historical_data/EUR_USD_M15_M_20211106212436.csv"
+    filename = "historical_data/EUR_USD_M15_M_20211106212436.csv"
 
-    instrument = "USD_JPY"
+    instrument = "EUR_USD"
 
     df_original = pd.read_csv(filename)
 
@@ -91,10 +91,10 @@ def backtest_process(inputs):
 
 def gen_backtest_df(inputs):
     df_original, instrument, stop, take, short, long, longlong = inputs
-    if instrument in ["EUR_JPY", "USD_JPY"]:
-        pip_basis = 0.01
-    else:
+    if instrument == "EUR_USD":
         pip_basis = 0.0001
+    else:
+        pip_basis = 0.01
     client = BackTest(instrument, 0.8)
     logic = IchimokuMethod(
         short,
