@@ -1,5 +1,4 @@
 import pandas as pd
-
 from app.logic.common import add_fixed_width_limit_prices
 
 
@@ -12,8 +11,8 @@ class BackTest:
         else:
             self.pip_basis = 0.0001
 
-        self.stop_loss_pips = 20
-        self.take_profit_pips = 20
+        self.default_stop_loss_pips = 20
+        self.default_take_profit_pips = 20
         self.split = split_pips * self.pip_basis
 
     def run_backtest(
@@ -23,7 +22,10 @@ class BackTest:
 
         if "buy_stop_loss_price" not in list(df.columns):
             df = add_fixed_width_limit_prices(
-                df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
+                df,
+                self.default_stop_loss_pips,
+                self.default_take_profit_pips,
+                self.pip_basis,
             )
 
         position = 0
