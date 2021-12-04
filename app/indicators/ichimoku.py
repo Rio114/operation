@@ -1,14 +1,16 @@
 from typing import List, Tuple
 
 import pandas as pd
+from app.tasks import get_module_logger
 
 
 class Ichimoku:
-    def __init__(self, short=9, long=26, longlong=52):
+    def __init__(self, short, long, longlong):
         self.short = short
         self.long = long
         self.longlong = longlong
         self.price_cols = ["open", "high", "low", "close"]
+        self.logger = get_module_logger(__name__)
 
     def generate_df(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
         additional_df = pd.DataFrame(columns=df.columns, index=range(self.long))
@@ -30,6 +32,8 @@ class Ichimoku:
             "preceding_span2",
             "behind",
         ]
+        self.logger.debug("generated ichimoku_df")
+
         return ichimoku_df, added_cols
 
     def _generate_basis_line(self, df: pd.DataFrame) -> pd.DataFrame:

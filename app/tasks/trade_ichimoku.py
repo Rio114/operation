@@ -7,9 +7,12 @@ from app.entities.transaction import OpenOrderModel
 from app.infra.api.candle import Candle
 from app.infra.api.transaction import Transaction
 from app.logic.ichimoku_method import IchimokuMethod
+from app.tasks import get_module_logger
 
 
 def main():
+    logger = get_module_logger(__name__)
+
     config = Config()
     instruments = ["USD_JPY", "EUR_JPY", "EUR_USD"]
     granularity = "M15"
@@ -20,24 +23,25 @@ def main():
 
     transaction_client = Transaction()
     positions = transaction_client.find_current_positions()
-    print("------current positions------")
+
+    logger.info("------current positions------")
 
     position_units = {}
     for position in positions:
         position_units[position.instrument] = position.units
-    print(position_units)
 
+    logger.info(position_units)
     quote_client = Candle()
 
     start_time = time.time()
     for instrument in instruments:
-        print(f"-------{instrument}----------")
+        logger.info(f"-------{instrument}----------")
         if instrument in list(position_units.keys()):
             end_time = time.time()
             duration = end_time - start_time
             start_time = time.time()
-            print(f"{instrument} has a position.")
-            print(f"execution time: {duration: .5f} sec")
+            logger.info(f"{instrument} has a position.")
+            logger.info(f"execution time: {duration: .5f} sec")
             continue
 
         params = ichimoku_params[instrument]
@@ -68,7 +72,7 @@ def main():
         candle_time = df_judgment["time"].iloc[-1]
         buy_judgment = df_judgment["buy_judgment"].iloc[-1]
         sell_judgment = df_judgment["sell_judgment"].iloc[-1]
-        print(candle_time, buy_judgment, sell_judgment)
+        logger.info(f"{candle_time}, {buy_judgment}, {sell_judgment}")
 
         if buy_judgment:
             oom = OpenOrderModel(
@@ -79,7 +83,7 @@ def main():
                 take_profit_price=df_judgment["buy_take_profit_price"].iloc[-1],
                 units=units,
             )
-            print("buy order!!!")
+            logger.info("buy order!!!")
         elif sell_judgment:
             oom = OpenOrderModel(
                 instrument=instrument,
@@ -89,17 +93,17 @@ def main():
                 take_profit_price=df_judgment["sell_take_profit_price"].iloc[-1],
                 units=units,
             )
-            print("sell order!!!")
+            logger.info("sell order!!!")
         else:
             end_time = time.time()
             duration = end_time - start_time
             start_time = time.time()
-            print(f"execution time: {duration: .5f} sec")
+            logger.info(f"execution time: {duration: .5f} sec")
             continue
 
-        print("send order")
+        logger.info("send order")
         res = transaction_client.create_open_order_at_market(oom)
-        print(res)
+        logger.info(f"{res}")
 
         # order(instrument, judgment, units)
 
