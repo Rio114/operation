@@ -1,7 +1,6 @@
 import time
 
 import yaml
-
 from app.config import Config
 from app.entities.candle import QuoteCurrentCandleModel
 from app.entities.transaction import OpenOrderModel
@@ -52,7 +51,7 @@ def main():
             granularity=granularity,
             instrument=instrument,
             price_type="M",
-            stick_count=longlong,
+            stick_count=longlong * 2,
         )
 
         if instrument == "EUR_USD":

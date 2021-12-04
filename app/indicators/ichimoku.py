@@ -11,7 +11,7 @@ class Ichimoku:
         self.price_cols = ["open", "high", "low", "close"]
 
     def generate_df(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
-        additional_df = pd.DataFrame(columns=df.columns, index=range(self.longlong))
+        additional_df = pd.DataFrame(columns=df.columns, index=range(self.long))
         ichimoku_df = pd.concat([df, additional_df], axis=0).reset_index(drop=True)
         ichimoku_df["basis"] = self._generate_basis_line(ichimoku_df)
         ichimoku_df["conversion"] = self._generate_conversion_line(ichimoku_df)
@@ -85,14 +85,17 @@ class Ichimoku:
 
 def main():
     filename = "historical_data/sample_candles.csv"
-    df = pd.read_csv(filename, nrows=15)
+    short = 11
+    long = 36
+    longlong = 44
+    df = pd.read_csv(filename, nrows=longlong * 3)
     print(df)
     print("-" * 10)
 
-    client = Ichimoku(2, 4, 8)
+    client = Ichimoku(short, long, longlong)
     ich_df, cols = client.generate_df(df)
     print(cols)
-    print(ich_df)
+    print(ich_df.iloc[: longlong * 3 + 3])
 
 
 if __name__ == "__main__":

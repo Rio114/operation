@@ -1,5 +1,4 @@
 import pandas as pd
-
 from app.indicators.ichimoku import Ichimoku
 from app.logic.common import add_fixed_width_limit_prices
 
@@ -50,7 +49,7 @@ class IchimokuMethod:
             df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
         )
 
-        return df.iloc[: -self.longlong_term]
+        return df.iloc[: -self.long_term]
 
 
 def main():

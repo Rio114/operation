@@ -9,4 +9,4 @@ class Config:
     ACCOUNT_ID = os.environ.get("OANDA_ACCOUNT_ID")
     api = API(access_token=ACCESS_TOKEN, environment=TRADING_ENV)
 
-    UNITS = 1000
+    UNITS = 5000
