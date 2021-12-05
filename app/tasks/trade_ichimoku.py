@@ -1,6 +1,7 @@
 import time
 
 import yaml
+
 from app.config import Config
 from app.entities.candle import QuoteCurrentCandleModel
 from app.entities.transaction import OpenOrderModel
@@ -89,8 +90,7 @@ def main():
             df_judgment["sell_take_profit_price"].iloc[-1], pip_digit + 1
         )
         logger.info(
-            f"{candle_time}, {buy_judgment}, {buy_stop_loss_price}, {buy_take_profit_price},\
-             {sell_judgment}, {sell_stop_loss_price}, {sell_take_profit_price}"
+            f"{candle_time}, {buy_judgment}, {buy_stop_loss_price}, {buy_take_profit_price},{sell_judgment}, {sell_stop_loss_price}, {sell_take_profit_price}"
         )
 
         if buy_judgment:
