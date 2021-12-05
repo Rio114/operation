@@ -6,7 +6,7 @@ from app.config import Config
 def get_module_logger(modname):
     config = Config()
     logger = getLogger(modname)
-    logger_level = DEBUG
+    logger_level = INFO
     if not logger.hasHandlers():
         logger_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         handler = StreamHandler()

@@ -1,7 +1,6 @@
 import time
 
 import yaml
-
 from app.config import Config
 from app.entities.candle import QuoteCurrentCandleModel
 from app.entities.transaction import OpenOrderModel
@@ -60,9 +59,11 @@ def main():
         )
 
         if instrument == "EUR_USD":
-            pip_basis = 0.0001
+            pip_digit = 4
+            pip_basis = 0.1 ** pip_digit
         else:
-            pip_basis = 0.01
+            pip_digit = 2
+            pip_basis = 0.1 ** pip_digit
 
         df = quote_client.quote_latest_candles(qccm)
         logic = IchimokuMethod(
@@ -73,15 +74,32 @@ def main():
         candle_time = df_judgment["time"].iloc[-1]
         buy_judgment = df_judgment["buy_judgment"].iloc[-1]
         sell_judgment = df_judgment["sell_judgment"].iloc[-1]
-        logger.info(f"{candle_time}, {buy_judgment}, {sell_judgment}")
+
+        # TODO: move pip round
+        buy_stop_loss_price = round(
+            df_judgment["buy_stop_loss_price"].iloc[-1], pip_digit + 1
+        )
+        buy_take_profit_price = round(
+            df_judgment["buy_take_profit_price"].iloc[-1], pip_digit + 1
+        )
+        sell_stop_loss_price = round(
+            df_judgment["sell_stop_loss_price"].iloc[-1], pip_digit + 1
+        )
+        sell_take_profit_price = round(
+            df_judgment["sell_take_profit_price"].iloc[-1], pip_digit + 1
+        )
+        logger.info(
+            f"{candle_time}, {buy_judgment}, {buy_stop_loss_price}, {buy_take_profit_price},\
+             {sell_judgment}, {sell_stop_loss_price}, {sell_take_profit_price}"
+        )
 
         if buy_judgment:
             oom = OpenOrderModel(
                 instrument=instrument,
                 order_type="buy",
                 current_price=df_judgment["close"].iloc[-1],
-                stop_loss_price=df_judgment["buy_stop_loss_price"].iloc[-1],
-                take_profit_price=df_judgment["buy_take_profit_price"].iloc[-1],
+                stop_loss_price=buy_stop_loss_price,
+                take_profit_price=buy_take_profit_price,
                 units=units,
             )
             logger.info("buy order!!!")
@@ -90,8 +108,8 @@ def main():
                 instrument=instrument,
                 order_type="sell",
                 current_price=df_judgment["close"].iloc[-1],
-                stop_loss_price=df_judgment["sell_stop_loss_price"].iloc[-1],
-                take_profit_price=df_judgment["sell_take_profit_price"].iloc[-1],
+                stop_loss_price=sell_stop_loss_price,
+                take_profit_price=sell_take_profit_price,
                 units=units,
             )
             logger.info("sell order!!!")
@@ -102,7 +120,7 @@ def main():
             logger.info(f"execution time: {duration: .5f} sec")
             continue
 
-        logger.info("send order")
+        logger.info(f"{oom}")
         res = transaction_client.create_open_order_at_market(oom)
         logger.info(f"{res}")
 

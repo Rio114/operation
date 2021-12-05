@@ -9,5 +9,5 @@ class Config:
     ACCOUNT_ID = os.environ.get("OANDA_ACCOUNT_ID")
     api = API(access_token=ACCESS_TOKEN, environment=TRADING_ENV)
 
-    UNITS = 5000
+    UNITS = 2000
     LOGFILE = "ichimoku.log"
