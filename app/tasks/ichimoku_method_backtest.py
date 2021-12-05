@@ -1,6 +1,7 @@
 from multiprocessing import Pool
 
 import pandas as pd
+
 from app.logic.ichimoku_method import IchimokuMethod
 from app.tasks.backtest import BackTest
 

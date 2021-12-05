@@ -10,3 +10,4 @@ class Config:
     api = API(access_token=ACCESS_TOKEN, environment=TRADING_ENV)
 
     UNITS = 5000
+    LOGFILE = "ichimoku.log"
