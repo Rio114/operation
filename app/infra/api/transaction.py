@@ -1,10 +1,9 @@
 from typing import List
 
-from oandapyV20.endpoints import orders as orders_api
-from oandapyV20.endpoints import positions as positions_api
-
 from app.config import Config
 from app.entities.transaction import CloseOrderModel, OpenOrderModel, PositionModel
+from oandapyV20.endpoints import orders as orders_api
+from oandapyV20.endpoints import positions as positions_api
 
 
 class Transaction:
@@ -74,11 +73,11 @@ class Transaction:
             order_type_flg = -1
 
         units = order_type_flg * oom.units
-        stop_loss_price = order_type_flg * round(
+        stop_loss_price = round(
             oom.stop_loss_price,
             pip_digit + 1,
         )
-        take_profit_price = order_type_flg * round(
+        take_profit_price = round(
             oom.take_profit_price,
             pip_digit + 1,
         )
@@ -124,23 +123,23 @@ def main():
     print("------current orders------")
     print(orders)
 
-    current_price = 115.111
-    stop_loss_prices = 115.011
-    take_profit_prices = 115.211
-    units = 10
+    current_price = 1.12639
+    stop_loss_price = 1.12839
+    take_profit_price = 1.12439
+    units = 11
 
     open_order = OpenOrderModel(
-        instrument="USD_JPY",
-        order_type="buy",
+        instrument="EUR_USD",
+        order_type="sell",
         current_price=current_price,
-        stop_loss_pips=stop_loss_prices,
-        take_profit_pips=take_profit_prices,
+        stop_loss_price=stop_loss_price,
+        take_profit_price=take_profit_price,
         units=units,
     )
     print("------send orders------")
     print(open_order)
-    # res = transaction.create_open_order_at_market(open_order)
-    # print(res)
+    res = transaction.create_open_order_at_market(open_order)
+    print(res)
 
     print("------close position orders------")
     # res = transaction.close_current_position("USD_JPY", "long")
