@@ -1,7 +1,6 @@
 from multiprocessing import Pool
 
 import pandas as pd
-
 from app.logic.ichimoku_method import IchimokuMethod
 from app.tasks.backtest import BackTest
 
@@ -16,8 +15,8 @@ def main():
     df_original = pd.read_csv(filename)
 
     cond_list = []
-    for stop in range(20, 51, 5):
-        for take in range(20, 101, 5):
+    for stop in range(30, 51, 5):
+        for take in range(30, 71, 5):
             for short in range(7, 13, 1):
                 for long in range(short * 2, short * 3, 2):
                     for longlong in range(short * 4, short * 5, 2):
@@ -58,6 +57,7 @@ def main():
         .reset_index(drop=True)
     )
     print(result_df.head(20))
+    print(result_df.tail(5))
 
     best_record = result_df.iloc[0].values
     best_cond = best_record[1:6]

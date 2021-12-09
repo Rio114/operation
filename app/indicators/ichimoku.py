@@ -1,7 +1,6 @@
 from typing import List, Tuple
 
 import pandas as pd
-
 from app.tasks import get_module_logger
 
 
@@ -25,7 +24,6 @@ class Ichimoku:
             ichimoku_df
         )
         ichimoku_df["behind"] = self._generate_behind_line(ichimoku_df)
-
         added_cols = [
             "basis",
             "conversion",
@@ -34,55 +32,35 @@ class Ichimoku:
             "behind",
         ]
         self.logger.debug("generated ichimoku_df")
-
         return ichimoku_df, added_cols
 
-    def _generate_basis_line(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _generate_basis_line(self, df: pd.DataFrame) -> pd.Series:
         se_max = df["high"].rolling(self.long).max()
         se_min = df["low"].rolling(self.long).min()
-
         values = (se_max + se_min) / 2
+        return values
 
-        basis_df = pd.DataFrame(values, columns=["basis"], index=df.index)
-
-        return basis_df
-
-    def _generate_conversion_line(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _generate_conversion_line(self, df: pd.DataFrame) -> pd.Series:
         se_max = df["high"].rolling(self.short).max()
         se_min = df["low"].rolling(self.short).min()
         values = (se_max + se_min) / 2
-        conversion_df = pd.DataFrame(values, columns=["basis"], index=df.index)
-
-        return conversion_df
+        return values
 
     def _generate_preceding_span_1_line(self, df: pd.DataFrame) -> pd.DataFrame:
         basis = self._generate_basis_line(df)
         conversion = self._generate_conversion_line(df)
-
         values = (basis + conversion) / 2
-        span1 = (
-            pd.DataFrame(values).shift(self.long).reset_index(drop=True).astype("float")
-        )
-        span1.index = df.index
-        return span1
+        return values.shift(self.long)
 
     def _generate_preceding_span_2_line(self, df: pd.DataFrame) -> pd.DataFrame:
         high = df["high"]
         low = df["low"]
-
         se_max = high.rolling(self.longlong).max()
         se_min = low.rolling(self.longlong).min()
-        span2 = (
-            ((se_max + se_min) / 2)
-            .shift(self.long)
-            .reset_index(drop=True)
-            .astype("float")
-        )
-        span2.index = df.index
-        return span2
+        values = (se_max + se_min) / 2
+        return values.shift(self.long)
 
     def _generate_behind_line(self, df: pd.DataFrame) -> pd.DataFrame:
-
         behind = df["close"].shift(-self.long)
         behind.index = df.index
         return behind
@@ -90,9 +68,9 @@ class Ichimoku:
 
 def main():
     filename = "historical_data/sample_candles.csv"
-    short = 11
-    long = 36
-    longlong = 44
+    short = 2
+    long = 4
+    longlong = 8
     df = pd.read_csv(filename, nrows=longlong * 3)
     print(df)
     print("-" * 10)

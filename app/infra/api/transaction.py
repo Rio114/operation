@@ -1,9 +1,10 @@
 from typing import List
 
-from app.config import Config
-from app.entities.transaction import CloseOrderModel, OpenOrderModel, PositionModel
 from oandapyV20.endpoints import orders as orders_api
 from oandapyV20.endpoints import positions as positions_api
+
+from app.config import Config
+from app.entities.transaction import CloseOrderModel, OpenOrderModel, PositionModel
 
 
 class Transaction:
