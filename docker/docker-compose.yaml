@@ -1,0 +1,7 @@
+version: "3"
+services:
+  operation:
+    image: python:dev
+    container_name: operation
+    volumes:
+      - $HOME/Documents/git/operation:/operation
