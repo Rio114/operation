@@ -5,3 +5,4 @@ services:
     container_name: operation
     volumes:
       - $HOME/Documents/git/operation:/operation
+    working_dir: /operation

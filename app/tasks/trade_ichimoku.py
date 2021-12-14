@@ -1,7 +1,6 @@
 import time
 
 import yaml
-
 from app.config import Config
 from app.entities.candle import QuoteCurrentCandleModel
 from app.entities.transaction import OpenOrderModel
@@ -15,7 +14,7 @@ def main():
     logger = get_module_logger(__name__)
 
     config = Config()
-    instruments = ["USD_JPY", "EUR_JPY", "EUR_USD"]
+    instruments = ["USD_JPY", "EUR_USD"]
     granularity = "M15"
     units = config.UNITS
 
@@ -45,12 +44,19 @@ def main():
             logger.info(f"execution time: {duration: .5f} sec")
             continue
 
+        if instrument == "EUR_USD":
+            pip_digit = 4
+            pip_basis = 0.1 ** pip_digit
+        else:
+            pip_digit = 2
+            pip_basis = 0.1 ** pip_digit
+
         params = ichimoku_params[instrument]
-        stop_loss_pips = params["STOP"]
-        take_profit_pips = params["PROFIT"]
         short = params["ICHIMOKU"][0]
         long = params["ICHIMOKU"][1]
         longlong = params["ICHIMOKU"][2]
+        stop_loss_pips = params["STOP"]
+        take_profit_pips = params["PROFIT"]
 
         qccm = QuoteCurrentCandleModel(
             granularity=granularity,
@@ -58,13 +64,6 @@ def main():
             price_type="M",
             stick_count=longlong * 2,
         )
-
-        if instrument == "EUR_USD":
-            pip_digit = 4
-            pip_basis = 0.1 ** pip_digit
-        else:
-            pip_digit = 2
-            pip_basis = 0.1 ** pip_digit
 
         df = quote_client.quote_latest_candles(qccm)
         logic = IchimokuMethod(
@@ -75,6 +74,7 @@ def main():
         candle_time = df_judgment["time"].iloc[-1]
         buy_judgment = df_judgment["buy_judgment"].iloc[-1]
         sell_judgment = df_judgment["sell_judgment"].iloc[-1]
+        current_price = df_judgment["close"].iloc[-1]
 
         # TODO: move pip round
         buy_stop_loss_price = round(
@@ -97,7 +97,7 @@ def main():
             oom = OpenOrderModel(
                 instrument=instrument,
                 order_type="buy",
-                current_price=df_judgment["close"].iloc[-1],
+                current_price=current_price,
                 stop_loss_price=buy_stop_loss_price,
                 take_profit_price=buy_take_profit_price,
                 units=units,
@@ -107,7 +107,7 @@ def main():
             oom = OpenOrderModel(
                 instrument=instrument,
                 order_type="sell",
-                current_price=df_judgment["close"].iloc[-1],
+                current_price=current_price,
                 stop_loss_price=sell_stop_loss_price,
                 take_profit_price=sell_take_profit_price,
                 units=units,
@@ -123,8 +123,6 @@ def main():
         logger.info(f"{oom}")
         res = transaction_client.create_open_order_at_market(oom)
         logger.info(f"{res}")
-
-        # order(instrument, judgment, units)
 
 
 if __name__ == "__main__":

@@ -6,17 +6,17 @@ from app.tasks.backtest import BackTest
 
 
 def main():
-    filename = "historical_data/USD_JPY_M15_M_20211106212354.csv"
-    # filename = "historical_data/EUR_JPY_M15_M_20211106212412.csv"
-    # filename = "historical_data/EUR_USD_M15_M_20211106212436.csv"
+    # filename = "historical_data/USD_JPY_M15_M_20210101_20211210.csv"
+    # filename = "historical_data/EUR_JPY_M15_M_20210101_20211210.csv"
+    filename = "historical_data/EUR_USD_M15_M_20210101_20211210.csv"
 
-    instrument = "USD_JPY"
+    instrument = "EUR_USD"
 
     df_original = pd.read_csv(filename)
 
     cond_list = []
-    for stop in range(30, 51, 5):
-        for take in range(30, 71, 5):
+    for stop in range(20, 51, 5):
+        for take in range(20, 71, 5):
             for short in range(7, 13, 1):
                 for long in range(short * 2, short * 3, 2):
                     for longlong in range(short * 4, short * 5, 2):

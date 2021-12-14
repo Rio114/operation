@@ -51,12 +51,12 @@ class IchimokuMethod:
 
 
 def main():
-    filename = "historical_data/USD_JPY_M15_M_20211106212354.csv"
-    df = pd.read_csv(filename, nrows=240)
+    filename = "historical_data/USD_JPY_M15_M_20211201_20211210.csv"
+    df = pd.read_csv(filename)
     print(df.head())
 
-    logic = IchimokuMethod(2, 4, 8, 10, 10, 0.01)
-    df_judgment = logic.generate_judgment_matrix(df)
+    logic = IchimokuMethod(12, 26, 56, 30, 55, 0.01)
+    df_judgment = logic.generate_judgment_matrix(df.iloc[:768])
     cols_prices = [
         "high",
         "low",
@@ -72,18 +72,19 @@ def main():
         "sell_take_profit_price",
     ]
     cols_judgment = [
-        "b_judge_1",
-        "b_judge_2",
-        "b_judge_3",
+        "buy_1",
+        "buy_2",
+        "buy_3",
         "buy_judgment",
-        "s_judge_1",
-        "s_judge_2",
-        "s_judge_3",
+        "sell_1",
+        "sell_2",
+        "sell_3",
         "sell_judgment",
     ]
     print(df_judgment)
     print(df_judgment[cols_prices].tail(30))
     print(df_judgment[cols_judgment].tail(30))
+    df_judgment.to_csv("test.csv")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,9 @@
 from typing import List
 
-from oandapyV20.endpoints import orders as orders_api
-from oandapyV20.endpoints import positions as positions_api
-
 from app.config import Config
 from app.entities.transaction import CloseOrderModel, OpenOrderModel, PositionModel
+from oandapyV20.endpoints import orders as orders_api
+from oandapyV20.endpoints import positions as positions_api
 
 
 class Transaction:
@@ -139,8 +138,8 @@ def main():
     )
     print("------send orders------")
     print(open_order)
-    res = transaction.create_open_order_at_market(open_order)
-    print(res)
+    # res = transaction.create_open_order_at_market(open_order)
+    # print(res)
 
     print("------close position orders------")
     # res = transaction.close_current_position("USD_JPY", "long")

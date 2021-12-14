@@ -2,14 +2,13 @@ import datetime as dt
 import time
 
 import pandas as pd
+from app.config import Config
+from app.entities.candle import QuoteCurrentCandleModel, QuoteHistoricalCandleModel
+from app.infra.candle.historical_candle import HistricalCandleFormatter
 from oandapyV20.endpoints.instruments import (
     InstrumentsCandles as InstrumentsCandles_api,
 )
 from oandapyV20.exceptions import V20Error
-
-from app.config import Config
-from app.entities.candle import QuoteCurrentCandleModel, QuoteHistoricalCandleModel
-from app.infra.candle.historical_candle import HistricalCandleFormatter
 
 
 class Candle:
@@ -113,15 +112,15 @@ class Candle:
 def main():
     client = Candle()
 
-    # qhcm = QuoteHistoricalCandleModel(
-    #     granularity="S5",
-    #     instrument="USD_JPY",
-    #     price_type="M",
-    #     quote_from="20211122",
-    #     quote_to="20211123",
-    # )
-    # df = client.quote_historical_candles(qhcm)
-    # print(df)
+    qhcm = QuoteHistoricalCandleModel(
+        granularity="M15",
+        instrument="EUR_USD",
+        price_type="M",
+        quote_from="20210101",
+        quote_to="20211210",
+    )
+    df = client.quote_historical_candles(qhcm)
+    print(df)
 
     qccm = QuoteCurrentCandleModel(
         granularity="M15", instrument="USD_JPY", price_type="M", stick_count=30
