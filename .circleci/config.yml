@@ -34,15 +34,15 @@ jobs:
           # aws の認証を得る。パブリックイメージとプライベートリポジトリの両方。
           name: aws auth
           command: |
-            aws ecr-public get-login-password --region ${AWS_DEFAULT_REGION} | sudo docker login --username AWS --password-stdin public.ecr.aws
-            aws ecr get-login-password | sudo docker login --username AWS --password-stdin ${AWS_ACCOUNTID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+            aws ecr-public get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin public.ecr.aws
+            aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNTID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
       - run:
           # ビルドしてデプロイ。ECR にプッシュするとダイジェストが返ってくるので、それを環境変数に追加する。（serverless が使う）
           name: build image & deploy
           command: |
             docker build -t ${FUNC_NAME} .
             docker tag ${FUNC_NAME} ${AWS_ACCOUNTID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${FUNC_NAME}
-            export ECR_DIGEST=`sudo docker push ${AWS_ACCOUNTID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${FUNC_NAME} | grep digest | cut -d ' ' -f3`
+            export ECR_DIGEST=`docker push ${AWS_ACCOUNTID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${FUNC_NAME} | grep digest | cut -d ' ' -f3`
             echo ${ECR_DIGEST}
             serverless deploy
 
