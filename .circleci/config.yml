@@ -53,4 +53,4 @@ workflows:
           filters:
             branches:
               # main ブランチのみ
-              only: main
+              only: master
