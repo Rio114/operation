@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   deploy_lambda_test:
     docker:
-      - image: docker:19
+      - image: amazon/aws-cli
     steps:
       # GitHub のリポジトリを持ってくる
       - checkout
@@ -14,7 +14,6 @@ jobs:
           name: serverless install
           command: |
             apk add --no-cache nodejs npm
-            npm update -g
             npm install -g serverless
             serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY}
       - run:
