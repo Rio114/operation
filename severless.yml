@@ -3,10 +3,11 @@ service: ecr-lambda-test
 provider:
   name: aws
   stage: dev
+  runtime: python3.8
   region: ${env:AWS_DEFAULT_REGION}
 
 functions:
-  iconow-predict:
+  lambda_dev:
     # ECR のプライベートリポジトリからビルドする
     image: ${env:AWS_ACCOUNTID}.dkr.ecr.${env:AWS_DEFAULT_REGION}.amazonaws.com/${env:FUNC_NAME}@${env:ECR_DIGEST}
     memorySize: 2048
