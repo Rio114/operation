@@ -2,7 +2,7 @@ service: ecr-lambda-test
 
 provider:
   name: aws
-  stage: dev
+  # stage: dev
   runtime: python3.8
   region: ${env:AWS_DEFAULT_REGION}
 
