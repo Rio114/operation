@@ -114,10 +114,10 @@ def main():
 
     qhcm = QuoteHistoricalCandleModel(
         granularity="M15",
-        instrument="EUR_USD",
+        instrument="EUR_JPY",
         price_type="M",
         quote_from="20210101",
-        quote_to="20211210",
+        quote_to="20211218",
     )
     df = client.quote_historical_candles(qhcm)
     print(df)

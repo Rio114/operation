@@ -10,11 +10,11 @@ from app.logic.ichimoku_method import IchimokuMethod
 from app.tasks import get_module_logger
 
 
-def main():
+def trade():
     logger = get_module_logger(__name__)
 
     config = Config()
-    instruments = ["USD_JPY", "EUR_USD"]
+    instruments = ["USD_JPY", "EUR_JPY", "EUR_USD"]
     granularity = "M15"
     units = config.UNITS
 
@@ -62,7 +62,7 @@ def main():
             granularity=granularity,
             instrument=instrument,
             price_type="M",
-            stick_count=longlong * 2,
+            stick_count=longlong * 2 + 2,
         )
 
         df = quote_client.quote_latest_candles(qccm)
@@ -126,4 +126,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    trade()

@@ -1,27 +1,22 @@
 import pandas as pd
 from app.indicators.ichimoku import Ichimoku
-from app.logic.common import add_fixed_width_limit_prices
 
 
-class IchimokuMethod:
+class IchimokuMethodDynamicStop:
     def __init__(
         self,
-        short_term: int,
-        long_term: int,
-        longlong_term: int,
-        stop_loss_pips: int,
-        take_profit_pips: int,
+        short: int,
+        long: int,
+        longlong: int,
         pip_basis: float,
     ):
-        self.short_term = short_term
-        self.long_term = long_term
-        self.longlong_term = longlong_term
-        self.stop_loss_pips = stop_loss_pips
-        self.take_profit_pips = take_profit_pips
+        self.short = short
+        self.long = long
+        self.longlong = longlong
         self.pip_basis = pip_basis
 
     def generate_judgment_matrix(self, candle_df):
-        client = Ichimoku(self.short_term, self.long_term, self.longlong_term)
+        client = Ichimoku(self.short, self.long, self.longlong)
         df, _ = client.generate_df(candle_df)
 
         # signal_1
@@ -29,8 +24,8 @@ class IchimokuMethod:
         df["sell_1"] = df["conversion"] < df["basis"]
 
         # signal_2
-        df["buy_2"] = (df["high"] < df["behind"]).shift(self.long_term)
-        df["sell_2"] = (df["low"] > df["behind"]).shift(self.long_term)
+        df["buy_2"] = (df["high"] < df["behind"]).shift(self.long)
+        df["sell_2"] = (df["low"] > df["behind"]).shift(self.long)
 
         # signal_3
         df["buy_3"] = df["high"] > df[["preceding_span1", "preceding_span2"]].max(
@@ -39,9 +34,6 @@ class IchimokuMethod:
         df["sell_3"] = df["low"] < df[["preceding_span1", "preceding_span2"]].min(
             axis=1
         )
-
-        # df["buy_judgment"] = df["buy_1"] & df["buy_2"] & df["buy_3"]
-        # df["sell_judgment"] = df["sell_1"] & df["sell_2"] & df["sell_3"]
 
         df["current_buy_judgment"] = (df["buy_1"] & df["buy_2"] & df["buy_3"]).astype(
             bool
@@ -59,11 +51,16 @@ class IchimokuMethod:
             "current_sell_judgment"
         ].astype(bool)
 
-        df = add_fixed_width_limit_prices(
-            df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
+        df["buy_stop_loss_price"] = df["low"].rolling(self.longlong).min()
+        df["buy_take_profit_price"] = (
+            df["close"] + df["close"] - df["buy_stop_loss_price"]
         )
 
-        return df.iloc[: -self.long_term]
+        df["sell_stop_loss_price"] = df["high"].rolling(self.longlong).max()
+        df["sell_take_profit_price"] = (
+            df["close"] - df["sell_stop_loss_price"] + df["close"]
+        )
+        return df.iloc[: -self.long]
 
 
 def main():
@@ -71,7 +68,7 @@ def main():
     df = pd.read_csv(filename)
     print(df.head())
 
-    logic = IchimokuMethod(12, 26, 56, 30, 55, 0.01)
+    logic = IchimokuMethodDynamicStop(12, 26, 56, 0.01)
     df_judgment = logic.generate_judgment_matrix(df.iloc[:768])
     cols_prices = [
         "high",
@@ -91,15 +88,19 @@ def main():
         "buy_1",
         "buy_2",
         "buy_3",
+        "previous_buy_judgment",
+        "current_buy_judgment",
         "buy_judgment",
         "sell_1",
         "sell_2",
         "sell_3",
+        "previous_sell_judgment",
+        "current_sell_judgment",
         "sell_judgment",
     ]
     print(df_judgment)
-    print(df_judgment[cols_prices].tail(30))
-    print(df_judgment[cols_judgment].tail(30))
+    print(df_judgment[cols_prices].tail(50))
+    print(df_judgment[cols_judgment].tail(50))
     df_judgment.to_csv("test.csv")
 
 
