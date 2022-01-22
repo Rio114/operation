@@ -6,11 +6,11 @@ from app.tasks.backtest import BackTest
 
 
 def main():
-    filename = "historical_data/USD_JPY_M15_M_20210101_20211218.csv"
-    # filename = "historical_data/EUR_JPY_M15_M_20210101_20211218.csv"
-    # filename = "historical_data/EUR_USD_M15_M_20210101_20211218.csv"
+    # filename = "historical_data/USD_JPY_M15_M_20220122224030.csv"
+    filename = "historical_data/EUR_JPY_M15_M_20220122224102.csv"
+    # filename = "historical_data/EUR_USD_M15_M_20220122224117.csv"
 
-    instrument = "USD_JPY"
+    instrument = "EUR_JPY"
 
     df_original = pd.read_csv(filename)
 

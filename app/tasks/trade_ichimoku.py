@@ -14,7 +14,8 @@ def trade():
     logger = get_module_logger(__name__)
 
     config = Config()
-    instruments = ["USD_JPY", "EUR_JPY", "EUR_USD"]
+    # instruments = ["USD_JPY", "EUR_JPY", "EUR_USD"]
+    instruments = ["USD_JPY"]
     granularity = "M15"
     units = config.UNITS
 

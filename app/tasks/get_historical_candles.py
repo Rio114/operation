@@ -3,14 +3,13 @@ import datetime as dt
 import time
 
 import pandas as pd
+from app.config import Config
+from app.infra.candle.historical_candle import HistricalCandleFormatter
 from oandapyV20.endpoints.instruments import InstrumentsCandles
 from oandapyV20.exceptions import V20Error
 
-from app.config import Config
-from app.infra.candle.historical_candle import HistricalCandleFormatter
-
 """
-poetry run python -m app.tasks.get_historical_candles -g H1 -i USD_JPY -p M
+poetry run python -m app.tasks.get_historical_candles -g M15 -i USD_JPY -p M
 """
 
 
@@ -48,7 +47,7 @@ def main():
     next_dt_str = "2021-05-01T00:00:00+00:00"
     next_dt = dt.datetime.strptime(next_dt_str, "%Y-%m-%dT%H:%M:%S+00:00")
 
-    until_dt_str = "2021-11-06T00:00:00+00:00"
+    until_dt_str = "2022-01-21T00:00:00+00:00"
     until_dt = dt.datetime.strptime(until_dt_str, "%Y-%m-%dT%H:%M:%S+00:00")
 
     params = {
