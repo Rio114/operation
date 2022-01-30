@@ -1,7 +1,4 @@
-import time
-
 import yaml
-from app.config import Config
 from app.infra.api.candle import Candle
 from app.infra.api.transaction import Transaction
 from app.logic.ichimoku_method import IchimokuMethod
@@ -29,25 +26,31 @@ def exec():
     quote_client = Candle()
 
     instrument = "USD_JPY"
-    trade(
-        IchimokuMethod,
-        instrument,
-        transaction_client,
-        quote_client,
-        position_units,
-        ichimoku_params,
-    )
+    logger.info(f"-------{instrument}----------")
+    if instrument in list(position_units.keys()):
+        logger.info(f"{instrument} has a position.")
+    else:
+        trade(
+            IchimokuMethod,
+            instrument,
+            transaction_client,
+            quote_client,
+            ichimoku_params,
+        )
 
     ### dynamic stop
     instrument = "EUR_JPY"
-    trade(
-        IchimokuMethodDynamicStop,
-        instrument,
-        transaction_client,
-        quote_client,
-        position_units,
-        ichimoku_params,
-    )
+    logger.info(f"-------{instrument}----------")
+    if instrument in list(position_units.keys()):
+        logger.info(f"{instrument} has a position.")
+    else:
+        trade(
+            IchimokuMethodDynamicStop,
+            instrument,
+            transaction_client,
+            quote_client,
+            ichimoku_params,
+        )
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ class IchimokuMethod:
         self.pip_basis = 0.1 ** self.pip_digit
 
     def generate_judgment_matrix(self, candle_df):
-        client = Ichimoku(self.short_term, self.long_term, self.longlong_term)
+        client = Ichimoku(self.short, self.long, self.longlong)
         df, _ = client.generate_df(candle_df)
 
         # signal_1
@@ -26,8 +26,8 @@ class IchimokuMethod:
         df["sell_1"] = df["conversion"] < df["basis"]
 
         # signal_2
-        df["buy_2"] = (df["high"] < df["behind"]).shift(self.long_term)
-        df["sell_2"] = (df["low"] > df["behind"]).shift(self.long_term)
+        df["buy_2"] = (df["high"] < df["behind"]).shift(self.long)
+        df["sell_2"] = (df["low"] > df["behind"]).shift(self.long)
 
         # signal_3
         df["buy_3"] = df["high"] > df[["preceding_span1", "preceding_span2"]].max(
@@ -36,9 +36,6 @@ class IchimokuMethod:
         df["sell_3"] = df["low"] < df[["preceding_span1", "preceding_span2"]].min(
             axis=1
         )
-
-        # df["buy_judgment"] = df["buy_1"] & df["buy_2"] & df["buy_3"]
-        # df["sell_judgment"] = df["sell_1"] & df["sell_2"] & df["sell_3"]
 
         df["current_buy_judgment"] = (df["buy_1"] & df["buy_2"] & df["buy_3"]).astype(
             bool
@@ -60,15 +57,16 @@ class IchimokuMethod:
             df, self.stop_loss_pips, self.take_profit_pips, self.pip_basis
         )
 
-        return df.iloc[: -self.long_term]
+        return df.iloc[: -self.long]
 
 
 def main():
     filename = "historical_data/USD_JPY_M15_M_20211201_20211210.csv"
     df = pd.read_csv(filename)
     print(df.head())
+    params = {"ICHIMOKU": [12, 26, 56], "STOP": 30, "PROFIT": 55, "PIP_DIGIT": 2}
 
-    logic = IchimokuMethod(12, 26, 56, 30, 55, 0.01)
+    logic = IchimokuMethod(params)
     df_judgment = logic.generate_judgment_matrix(df.iloc[:768])
     cols_prices = [
         "high",

@@ -16,7 +16,6 @@ def trade(
     instrument: str,
     transaction_client: Transaction,
     quote_client: Candle,
-    position_units,
     logic_params,
     granularity="M15",
 ):
@@ -29,14 +28,6 @@ def trade(
     pip_digit = logic.pip_digit
 
     start_time = time.time()
-    logger.info(f"-------{instrument}----------")
-    if instrument in list(position_units.keys()):
-        end_time = time.time()
-        duration = end_time - start_time
-        start_time = time.time()
-        logger.info(f"{instrument} has a position.")
-        logger.info(f"execution time: {duration: .5f} sec")
-        return
 
     qccm = QuoteCurrentCandleModel(
         granularity=granularity,

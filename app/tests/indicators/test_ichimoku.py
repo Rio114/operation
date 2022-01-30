@@ -1,7 +1,6 @@
 import pandas as pd
-from pandas.testing import assert_series_equal
-
 from app.indicators.ichimoku import Ichimoku
+from pandas.testing import assert_series_equal
 
 
 class TestIchimoku:
@@ -47,7 +46,7 @@ class TestIchimoku:
         _conversion = (
             self.client._generate_conversion_line(self.df).shift(self.long).iloc[-1]
         )
-        span1 = (_basis + _conversion).values[0] / 2
+        span1 = (_basis + _conversion) / 2
 
         _max = high_low[-self.longlong - self.long :, 0].max()
         _min = high_low[-self.longlong - self.long :, 1].min()

@@ -10,8 +10,6 @@ class IchimokuMethodDynamicStop:
         self.short = params["ICHIMOKU"][0]
         self.long = params["ICHIMOKU"][1]
         self.longlong = params["ICHIMOKU"][2]
-        # stop_loss_pips = params["STOP"]
-        # take_profit_pips = params["PROFIT"]
 
         self.pip_digit = params["PIP_DIGIT"]
         self.pip_basis = 0.1 ** self.pip_digit
@@ -68,8 +66,9 @@ def main():
     filename = "historical_data/USD_JPY_M15_M_20211201_20211210.csv"
     df = pd.read_csv(filename)
     print(df.head())
+    params = {"ICHIMOKU": [12, 26, 56], "PIP_DIGIT": 2}
 
-    logic = IchimokuMethodDynamicStop(12, 26, 56, 0.01)
+    logic = IchimokuMethodDynamicStop(params)
     df_judgment = logic.generate_judgment_matrix(df.iloc[:768])
     cols_prices = [
         "high",
