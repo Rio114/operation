@@ -6,19 +6,16 @@ from app.logic.common import add_fixed_width_limit_prices
 class IchimokuMethod:
     def __init__(
         self,
-        short_term: int,
-        long_term: int,
-        longlong_term: int,
-        stop_loss_pips: int,
-        take_profit_pips: int,
-        pip_basis: float,
+        params,
     ):
-        self.short_term = short_term
-        self.long_term = long_term
-        self.longlong_term = longlong_term
-        self.stop_loss_pips = stop_loss_pips
-        self.take_profit_pips = take_profit_pips
-        self.pip_basis = pip_basis
+        self.short = params["ICHIMOKU"][0]
+        self.long = params["ICHIMOKU"][1]
+        self.longlong = params["ICHIMOKU"][2]
+        self.stop_loss_pips = params["STOP"]
+        self.take_profit_pips = params["PROFIT"]
+
+        self.pip_digit = params["PIP_DIGIT"]
+        self.pip_basis = 0.1 ** self.pip_digit
 
     def generate_judgment_matrix(self, candle_df):
         client = Ichimoku(self.short_term, self.long_term, self.longlong_term)

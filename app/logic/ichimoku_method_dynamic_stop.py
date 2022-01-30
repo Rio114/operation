@@ -5,15 +5,16 @@ from app.indicators.ichimoku import Ichimoku
 class IchimokuMethodDynamicStop:
     def __init__(
         self,
-        short: int,
-        long: int,
-        longlong: int,
-        pip_basis: float,
+        params,
     ):
-        self.short = short
-        self.long = long
-        self.longlong = longlong
-        self.pip_basis = pip_basis
+        self.short = params["ICHIMOKU"][0]
+        self.long = params["ICHIMOKU"][1]
+        self.longlong = params["ICHIMOKU"][2]
+        # stop_loss_pips = params["STOP"]
+        # take_profit_pips = params["PROFIT"]
+
+        self.pip_digit = params["PIP_DIGIT"]
+        self.pip_basis = 0.1 ** self.pip_digit
 
     def generate_judgment_matrix(self, candle_df):
         client = Ichimoku(self.short, self.long, self.longlong)
