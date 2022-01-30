@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 import pandas as pd
+
 from app.tasks import get_module_logger
 
 

@@ -1,6 +1,7 @@
 import pandas as pd
-from app.indicators.ichimoku import Ichimoku
 from pandas.testing import assert_series_equal
+
+from app.indicators.ichimoku import Ichimoku
 
 
 class TestIchimoku:

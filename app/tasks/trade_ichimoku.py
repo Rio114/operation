@@ -1,4 +1,5 @@
 import yaml
+
 from app.infra.api.candle import Candle
 from app.infra.api.transaction import Transaction
 from app.logic.ichimoku_method import IchimokuMethod

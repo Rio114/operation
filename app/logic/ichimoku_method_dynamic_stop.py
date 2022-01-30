@@ -1,4 +1,5 @@
 import pandas as pd
+
 from app.indicators.ichimoku import Ichimoku
 
 
